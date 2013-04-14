@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require 'blotter'
+require 'logger'
+
+port = ARGV.first || 6200
+
+logfile = File.open '.blotter.log', File::WRONLY | File::APPEND | File::CREAT
+puts "server starting on port #{port}"
+puts "logging to .blotter.log"
+
+Blotter::Server.new port: port, logger: Logger.new(logfile)
