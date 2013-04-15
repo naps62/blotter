@@ -1,0 +1,8 @@
+[
+  {"cmd": "init", "params": {"name": "test"}},
+  {"cmd": "push", "params": {"table": "iterations", "name": "counter", "type":  "float",   "value":  1     }},
+  {"cmd": "push", "params": {"table": "iterations", "name": "time",     "type": "integer", "value":  12.34 }},
+  {"cmd": "push", "params": {"table": "iterations", "name": "counter", "type":  "float",   "value":  2     }},
+  {"cmd": "push", "params": {"table": "iterations", "name": "time",     "type": "integer", "value":  13.00 }},
+  {"cmd": "set",  "params": {"name" : "walltime", "type": "float", "value": 1234.5}}
+]

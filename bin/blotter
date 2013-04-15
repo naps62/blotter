@@ -2,11 +2,10 @@
 
 require 'blotter'
 require 'logger'
+require 'trollop'
 
-port = ARGV.first || 6200
+opts = Trollop
 
-logfile = File.open '.blotter.log', File::WRONLY | File::APPEND | File::CREAT
-puts "server starting on port #{port}"
-puts "logging to .blotter.log"
-
-Blotter::Server.new port: port, logger: Logger.new(logfile)
+file = (ARGV.first && File.open(ARGV.first)) || STDIN
+parser = Blotter::Parser.new(file)
+result = parser.parse
