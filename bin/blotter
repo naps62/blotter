@@ -4,8 +4,52 @@ require 'blotter'
 require 'logger'
 require 'trollop'
 
-opts = Trollop
+opts = Trollop::options do
+  opt :input,  'input',  short: :i, default: STDIN
+  opt :output, 'output', short: :o, default: '~/.blotter'
+end
 
+# root directory
+ROOT_DIR = File.join(Dir.home, ".blotter")
+Dir.mkdir(ROOT_DIR) unless Dir.exists?(ROOT_DIR)
+
+# parse
 file = (ARGV.first && File.open(ARGV.first)) || STDIN
 parser = Blotter::Parser.new(file)
 result = parser.parse
+
+# output gen
+PROJECT_DIR = File.join(ROOT_DIR, result.name)
+Dir.mkdir(PROJECT_DIR) unless Dir.exists?(PROJECT_DIR)
+PREVIOUS_ENTRY_NUM = Dir.entries(PROJECT_DIR).select { |f| f.match /^[0-9]+$/ }.map(&:to_i).max || -1
+NEW_ENTRY_NUM = PREVIOUS_ENTRY_NUM + 1
+EXEC_DIR    = File.join(PROJECT_DIR, "%03d" % NEW_ENTRY_NUM.to_s)
+Dir.mkdir(EXEC_DIR)
+
+# timestamp file
+File.open(File.join(EXEC_DIR, "timestamp"), 'w') do |f|
+  f << Time.now << "\n"
+end
+
+# raw file
+File.open(File.join(EXEC_DIR, "raw.json"), 'w') do |f|
+  f << result.raw
+end
+
+# values file
+File.open(File.join(EXEC_DIR, "values.csv"), 'w') do |f|
+  result.values.each do |name,val|
+    f << "#{name}, #{val}\n"
+  end
+end
+
+# tables
+result.tables.each do |tname,table|
+  File.open(File.join(EXEC_DIR, "table.#{tname}.csv"), 'w') do |f|
+    nlines = table.values.map(&:size).max
+    f << table.keys.join(', ') << "\n"
+    (0..nlines-1).each do |i|
+      f << table.values.map { |vals| vals[i] }.join(', ') << "\n"
+    end
+  end
+end

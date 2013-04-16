@@ -2,14 +2,16 @@ require 'pry'
 
 module Blotter
   class Result
-    attr_accessor :name, :values, :tables
+    attr_accessor :raw, :name, :values, :tables
 
     def initialize
+      @raw = ""
       @values = {}
       @tables = {}
     end
 
     def <<(command)
+      raw << command.to_s << "\n"
       self.send command["cmd"], command["params"]
     end
 
@@ -27,5 +29,7 @@ module Blotter
       @tables[params["table"]][params["name"]] << params["value"]
     end
 
+    def dump(dir)
+    end
   end
 end

@@ -12,10 +12,8 @@ module Blotter
     def parse
       @data = JSON.parse(@input.read)
       result = Blotter::Result.new
-      @data.each do |cmd|
-        result << cmd
-      end
-      binding.pry
+      @data.each { |cmd| result << cmd }
+      result
     end
   end
 end
